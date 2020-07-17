@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vue.mapper.MemberMapper">
+	<resultMap type="Member" id="memberMap">
+		<id property="id" column="id" />
+		<result property="id" column="id" />
+		<result property="userId" column="userId" />
+		<result property="userPw" column="userPw" />
+		<result property="userName" column="userName" />
+		<result property="point" column="point" />
+		<result property="enabled" column="enabled" />
+		<result property="createdAt" column="createdAt" />
+		<result property="updatedAt" column="updatedAt" />
+		<collection property="authList" resultMap="authMap">
+		</collection>
+	</resultMap>
+
+	<resultMap type="MemberAuth" id="authMap">
+		<result property="id" column="id" />
+		<result property="auth" column="auth" />
+	</resultMap>
+
+	<select id="readMemberId" resultMap="memberMap">
+		SELECT 
+			a.id,
+			a.userId,
+			a.userPw,
+			a.userName,
+			a.point,
+			a.createdAt,
+			a.updatedAt,
+			a.enabled,
+			b.auth
+		FROM TB_MEMBER a
+		LEFT OUTER JOIN TB_MEMBER_AUTH b
+		ON a.id = b.id
+		WHERE a.userId = #{userId}		
+	</select>
+
+	<insert id="insertMember" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO TB_MEMBER
+		(
+			 userId,
+			 userPw,
+			 userName
+		 )
+		VALUES
+		(
+			 #{userId},
+			 #{userPw},
+			 #{userName}
+		 )
+	</insert>
+
+	<update id="updateMember">
+		UPDATE TB_MEMBER
+		SET 
+		   userName = #{userName} , 
+		   enabled = #{enabled} ,
+		   updatedAt = now()
+		 WHERE userId = #{userId}
+	</update>
+
+	<delete id="deleteMember">
+		UPDATE TB_MEMBER
+		   SET enabled = 0
+		 WHERE userId = #{val}
+	</delete>
+
+	<insert id="insertAuth">
+		INSERT INTO TB_MEMBER_AUTH
+		 ( id, auth )
+		VALUES
+		 (  #{id},  #{auth} )
+	</insert>
+
+	<delete id="deleteAuth">
+		DELETE FROM TB_MEMBER_AUTH WHERE id = #{vai}
+	</delete>
+	
+	<select id="countAll" resultType="int">
+		SELECT count(*)	FROM TB_MEMBER
+	</select>
+
+	<select id="list" resultMap="memberMap">
+		SELECT 
+			a.id,
+			a.userId,
+			a.userPw,
+			a.userName,
+			a.point,
+			a.createdAt,
+			a.updatedAt,
+			a.enabled,
+			b.auth
+		FROM TB_MEMBER a
+		LEFT OUTER JOIN TB_MEMBER_AUTH b
+		ON a.id = b.id
+	</select>
+</mapper>
